@@ -104,7 +104,7 @@ public class main extends Activity implements OnClickListener, SensorEventListen
 
 		TextView ltv1 = (TextView) findViewById(R.id.Atv1);
 //		ltv1.setText("This application was developed from the source codes available at github.com/yigiter/");
-		ltv1.setText("(Linear) Acceleration, Magnetic, Orientation, Normal delay");
+		ltv1.setText("(Linear) Acceleration, Gravity, Rotation Vector, GPS, Network, Normal delay"); //change comment here
 //		Linkify.addLinks(ltv1, Linkify.ALL);
 
 		lbtn_start.setOnClickListener(this);
@@ -359,7 +359,7 @@ public class main extends Activity implements OnClickListener, SensorEventListen
 		if (bfout[0]!=null) {
 			for (int i=0;i<lSenStates.getNum();i++) {
 				if (lSenStates.getActive(i))
-					lSenMan.registerListener(this, lSenMan.getDefaultSensor(lSenStates.getType(i)), SensorManager.SENSOR_DELAY_NORMAL);				
+					lSenMan.registerListener(this, lSenMan.getDefaultSensor(lSenStates.getType(i)), SensorManager.SENSOR_DELAY_NORMAL);	//change delay here		
 			}
 		}
 
@@ -402,11 +402,11 @@ public class main extends Activity implements OnClickListener, SensorEventListen
 
 				try {
 					if (file0!=null)
-						file0.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (normal, lin acc)\n"); // file0.append("]);\n\ncomment = \"" + comment + "\";");
+						file0.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (normal,acc,rot,grav,linacc)\n"); //change comment here
 					if (file1!=null)
-						file1.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (normal, lin acc)\n");
+						file1.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (normal,acc,rot,grav,linacc)\n"); //change comment here
 					if (file2!=null)
-						file2.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (normal, lin acc)\n");
+						file2.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (normal,acc,rot,grav,linacc)\n"); //change comment here
 					mLV.addtext("Saved comment.");
 					close_files();					
 					mLV.addtext("Stopped Logging: " + daytime + "\n");
@@ -425,11 +425,11 @@ public class main extends Activity implements OnClickListener, SensorEventListen
 
 				try {
 					if (file0!=null)
-					file0.append("\n\n% NO COMMENT ( " + daytime + ",  normal,acc,magn,linacc,orient)");
+					file0.append("\n\n% NO COMMENT ( " + daytime + ",  normal,acc,rot,grav,linacc)"); //change comment here
 					if (file1!=null)
-						file1.append("\n\n% NO COMMENT ( " + daytime + ",  normal,acc,magn,linacc,orient)");
+						file1.append("\n\n% NO COMMENT ( " + daytime + ",  normal,acc,rot,grav,linacc)"); //change comment here
 					if (file2!=null)
-						file2.append("\n\n% NO COMMENT ( " + daytime + ",  normal,acc,magn,linacc,orient)");
+						file2.append("\n\n% NO COMMENT ( " + daytime + ",  normal,acc,rot,grav,linacc)"); //change comment here
 					close_files();		
 					mLV.addtext("Stopped Logging: " + daytime + "\n");
 				} catch (IOException e) {

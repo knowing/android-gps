@@ -5,7 +5,7 @@ This application can be used for:
 -Logging the location provider outputs for each location provider (network, gps etc).
 
 This application is for developers. The sensors and location providers to be logged can only be changed in the code, not by the user. 
-The hardware data is logged in .m format under the /sdcard/GPSSensorLogger/v1.0 (the exact location is displayed in the console window of the application).
+The hardware data is logged in .m format under /sdcard/GPSSensorLogger/v1.0 (the exact location is displayed in the console window of the application) in a file per day named according to date (e.g. locprovider_20120113.m)
 
 For the logger activity, the services are not unregistered unless it is stopped by the user. Therefore, be careful when using the logger, otherwise your battery will be drained very quickly.
 When the application is not in focus, the logging activity may be stopped by the operating system when memory is low and started again when possible.
