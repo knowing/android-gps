@@ -1,0 +1,23 @@
+<gpx version="1.1" creator="Johanna">
+<metadata> metadataType </metadata>
+  <wpt lat="48.14998097" lon="11.56882615">
+    <name>Start</name>
+    <time>2011-11-28T13:06:37Z</time>
+  </wpt>    
+    <trk>
+        <name>28.11.2011 13:06:37</name>
+        <number>1</number>
+        <trkseg>
+            <trkpt lat="48.14998097" lon="11.56882615">
+                <time>2011-11-28T13:06:37Z</time>
+                <speed>1.25</speed>
+                <ele>623.2000122070313</ele>
+            </trkpt>
+            <trkpt lat="48.14999789" lon="11.56882473">
+                <time>2011-11-28T13:06:38Z</time>
+                <speed>1.25</speed>
+                <ele>624.0999755859375</ele>
+            </trkpt>
+        </trkseg>
+    </ trk>
+</gpx>
