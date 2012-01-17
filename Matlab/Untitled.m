@@ -18,7 +18,8 @@ provider = divide_provider(provider);
 % plot provider time 
 plot (provider(:,1), 'r'); hold on; plot(provider(:,3), 'b--');
 
-% Ergänzungen für fehlende Aufnahmen
+%% Ergänzungen für fehlende Aufnahmen
+fixes =[
 
 1323286500000, 3, 1323280734514, 58.0, 48.16017056, 11.57777982, 0.0, 0.0; % eingefügt: Sport
 1323286550000, 3, 1323280734514, 56.0, 48.160317,11.575016, 0.0, 0.0; % eingefügt: dazwischen
@@ -32,7 +33,7 @@ plot (provider(:,1), 'r'); hold on; plot(provider(:,3), 'b--');
 1323692400000, 3, 1323287806889, 5.0, 48.1201670,11.575660, 0.0, 0.0; %eingefügt: UBahn Kolumbusplatz
 1323692450000, 3, 1323287806889, 5.0, 48.119823,11.575552, 0.0, 0.0; %eingefügt: zu Hause zur Ubahn II
 1323692500000, 3, 1323443915522, 58.0, 48.119945,11.574234, 298.5, 0.5; %eingefügt: zu Hause zur Ubahn I
-1323692550000, 3, 1323443915522, 58.0, 48.12037101, 11.57280799, 298.5, 0.5]; %eingefügt: zu Hause
+1323692550000, 3, 1323443915522, 58.0, 48.12037101, 11.57280799, 298.5, 0.5; %eingefügt: zu Hause
 
 1323336627695, 3, 1323346731288, 51.0, 48.14874854, 11.56714105, 0.0, 0.0; %eingefügt: TUM
 1323336627695, 3, 1323336627692, 30.0, 48.1508117, 11.56499124, 121.4, 1.25; %eingefügt: Ubahn Theresienstr.
