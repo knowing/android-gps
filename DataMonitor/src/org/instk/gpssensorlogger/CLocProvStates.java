@@ -27,8 +27,8 @@ public class CLocProvStates implements Parcelable {
 				mindist[i]=0;
 				
 				//Set active status
-				if ((names[i].equals("gps")) || (names[i].equals("network")))
-//				if (names[i].equals("gps"))
+//				if ((names[i].equals("gps")) || (names[i].equals("network")))
+				if (names[i].equals("gps"))
 					act_list[i]=true;
 				else
 					act_list[i]=false;				
