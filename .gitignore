@@ -12,12 +12,11 @@
 .cache
 *.cache
 
-
 #ignore generated .class files
 *.class
 bin/
 
-
-
 #except this file
 !.gitignore
+
+.metadata/
