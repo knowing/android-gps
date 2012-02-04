@@ -15,12 +15,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.GpsStatus.Listener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -30,18 +27,16 @@ import android.os.Looper;
 import android.os.Message;
 import android.widget.Toast;
 
-public class LogService extends Service implements SensorEventListener, LocationListener, Listener{
+public class LogService extends Service implements SensorEventListener, LocationListener{
 	private Looper mServiceLooper;
 	private ServiceHandler mServiceHandler;
 
 	CSensorStates mSenStates;
-	CLocProvStates mLPStates; 
-	boolean mGPSState;
 
 	private SensorManager mSensorManager;
 	private LocationManager mLocManager;
 
-	private BufferedWriter[] fout=new BufferedWriter[3];
+	private BufferedWriter[] fout=new BufferedWriter[2];
 	private SimpleDateFormat day= new SimpleDateFormat("yyyyMMdd");
 
 	// Handler that receives messages from the thread
@@ -52,18 +47,16 @@ public class LogService extends Service implements SensorEventListener, Location
 
 		@Override
 		public void handleMessage(Message msg) {
-
+			// Acquire a reference to the system Sensor and Location Manager
 			mSensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
 			mLocManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-			//Get the names of all sources
+			//Get the names of all sensor sources
 			mSenStates = new CSensorStates(mSensorManager.getSensorList(Sensor.TYPE_ALL)); //nur noch Accelerometer
-			mLPStates = new CLocProvStates(mLocManager.getAllProviders()); //ALLE Quellen
-			mGPSState= false;
 
-//			private Sensor mAccelerometer;
+//			Sensor mAccelerometer;
 //			mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);			
-//			mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//			mSensorManager.registerListener(this, mAccelerometer, 40);
 			
 			try {
 				open_files();
@@ -86,10 +79,8 @@ public class LogService extends Service implements SensorEventListener, Location
 
 	@Override
 	public void onCreate() {
-		// Start up the thread running the service.  Note that we create a
-		// separate thread because the service normally runs in the process's
-		// main thread, which we don't want to block.  We also make it
-		// background priority so CPU-intensive work will not disrupt our UI.
+		// Start up the thread running the service.  Note that we create a separate thread because the service normally runs in the process's
+		// main thread, which we don't want to block.  We also make it background priority so CPU-intensive work will not disrupt our UI.
 		HandlerThread thread = new HandlerThread("ServiceStartArguments");
 		thread.start();
 
@@ -103,8 +94,7 @@ public class LogService extends Service implements SensorEventListener, Location
 	public int onStartCommand(Intent intent, int flags, int startId) {
 //		Toast.makeText(this, "starting service", Toast.LENGTH_SHORT).show();
 
-		// For each start request, send a message to start a job and deliver the
-		// start ID so we know which request we're stopping when we finish the job
+		// For each start request, send a message to start a job and deliver the start ID so we know which request we're stopping when we finish the job
 		Message msg = mServiceHandler.obtainMessage();
 		msg.arg1 = startId;
 		mServiceHandler.sendMessage(msg);
@@ -115,113 +105,56 @@ public class LogService extends Service implements SensorEventListener, Location
 
 
 	@Override
-	public IBinder onBind(Intent arg0) {
-		// We don't provide binding, so return null
+	public IBinder onBind(Intent arg0) {		// We don't provide binding, so return null
 		return null;
 	}
 
 	@Override
-	public void onDestroy() {
-		// The service is no longer used and is being destroyed
+	public void onDestroy() {	// The service is no longer used and is being destroyed
 		stop_recording();
 //		Toast.makeText(this, "destroying service", Toast.LENGTH_SHORT).show(); 
 		super.onDestroy();
 	}
 
-
-	private void close_files() {	//close files
-		BufferedWriter[] bfout=fout;
-		for (int i=0;i<3;i++) {
-			if (bfout[i]!=null)
-				try {
-					bfout[i].close();
-				} catch (IOException e) {
-					Toast.makeText(this, "File close error :" + i, Toast.LENGTH_SHORT).show();
-				}
-		}		
-		for (int i=0;i<3;i++) {
-			if (bfout[i]!=null)
-				try {
-					bfout[i].close();
-				} catch (IOException e) {
-					Toast.makeText(this, "File close error :" + i, Toast.LENGTH_SHORT).show();
-				}
-		}
-	}
-
 	private void open_files() throws IOException, FileNotFoundException {	//open files
-		//Refs
-		CSensorStates lSenStates=mSenStates;
-		CLocProvStates lLPStates=mLPStates;
+		//References
 		BufferedWriter[] bfout=fout;
 		String start_text=null;
-
-		//Open the files and register the listeners
-		if (lSenStates.getNumAct()>0) {
+		
+// Sensors		
 			if (file_location("accelerometer_").exists())
 				start_text = "";
 			else
 				start_text = "% ACCELEROMETER\n\n% Attributes:\n% system time, time stamp, sensor type, x_value, y_value, z_value \n\nacc = [";
+			
 			bfout[0]=new BufferedWriter(new FileWriter(file_location("accelerometer_"), true));
-
-			BufferedWriter file=fout[0];
-			if (file!=null) {
+			BufferedWriter file0=fout[0];
+			
+			if (file0!=null) {
 				try {
-					file.append(start_text);
-					//					file.append("SENSORS\n\nAttributes:\nsystem time, sensor name, time stamp, no of values, values \n\n");
+					file0.append(start_text);
 				} catch (IOException e) {
 					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
 				}
 			}
-		}
+		
+// Location Provider
+		if (file_location("locprovider_").exists())
+			start_text = "";
 		else
-			bfout[0]=null;
+			start_text = "% NETWORK PROVIDER\n\n% Attributes:\n% system time, provider name (3 for gps, 7 for network), 0, pr. accuracy, " +
+					"pr. latitude, pr. longitude, pr. bearing, pr. speed \n\n" + "provider = [";
 
-		if (lLPStates.getNumAct()>0) {
-
-			if (file_location("locprovider_").exists())
-				start_text = "";
-			else
-				start_text = "% NETWORK PROVIDER\n\n% Attributes:\n% system time, provider name (3 for gps, 7 for network), pr. time, pr. accuracy, " +
-						"pr. latitude, pr. longitude, pr. bearing, pr. speed \n\n" +
-						"provider = [";
-
-			bfout[1]=new BufferedWriter(new FileWriter(file_location("locprovider_"), true));
-			BufferedWriter file=fout[1];
-
-			if (file!=null) {
-				try {
-					file.append(start_text);
-				} catch (IOException e) {
-					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
-				}
-			}			
-		}
-		else
-			bfout[1]=null;
-
-		if (mGPSState) {
-
-			if (file_location("gpsstate_").exists())
-				start_text = "";
-			else
-				start_text = "% GPS STATUS\n\n% Attributes:\n% system time, PRN, Azimuth, Elevation, SNR, Almanach, " +
-						"Ephemeris, Sat. used in last fix, if next: @, if no next: # \n\n" +
-						"gps_status = [";
-
-			bfout[2]=new BufferedWriter(new FileWriter(file_location("gpsstate_"), true));
-			BufferedWriter file=fout[2];
-
-			if (file!=null) {
-				try {
-					file.append(start_text);						
-				} catch (IOException e) {
-					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
-				}
+		bfout[1]=new BufferedWriter(new FileWriter(file_location("locprovider_"), true));
+		BufferedWriter file1=fout[1];
+		
+		if (file1!=null) {
+			try {
+				file1.append(start_text);
+			} catch (IOException e) {
+				Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
 			}
-		}
-		else
-			bfout[2]=null;
+		}			
 	}
 
 
@@ -231,8 +164,8 @@ public class LogService extends Service implements SensorEventListener, Location
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			// We can read and write the media
-			String ftag=day.format(new Date()); // Nur Tag als Dateiname
-			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger/v1.0"); //speichert in sdcard/GPSSensorLogger
+			String ftag=day.format(new Date()); // date is filename
+			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger/v1.0"); // saved in sdcard/GPSSensorLogger
 			if (!root.exists()) {
 				root.mkdirs();
 			}
@@ -250,52 +183,35 @@ public class LogService extends Service implements SensorEventListener, Location
 
 	private void register_listeners() {
 		CSensorStates lSenStates=mSenStates;
-		CLocProvStates lLPStates=mLPStates;
 		BufferedWriter[] bfout=fout;
 
 		//Register the sensors
 		if (bfout[0]!=null) {
 			for (int i=0;i<lSenStates.getNum();i++) {
 				if (lSenStates.getActive(i))
-					mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(lSenStates.getType(i)), 40);			
-					mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(lSenStates.getType(i)), lSenStates.getRate(i));			
-				//						mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(lSenStates.getType(i)), SensorManager.SENSOR_DELAY_FASTEST);	//change delay here		
+					mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(lSenStates.getType(i)), 40);			// 40ms -> 25 Hz
 			}
 		}
 
 		//Register listeners for active location providers
 		if (bfout[1]!=null) {	
-			for (int i=0;i<lLPStates.getNum();i++) {
-				if (lLPStates.getActive(i))
-					mLocManager.requestLocationUpdates(lLPStates.getName(i), 0, 0, this); //mintime, mindist
-			}
-		}
-
-		if (bfout[2]!=null) {
-			mLocManager.addGpsStatusListener(this);
+			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 10s, mindist 2m
+			mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 2, this); //mintime 10s, mindist 2m
 		}
 	}
 
+		private void stop_recording() {
+			//Stop Recording
+			mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+			mSensorManager.unregisterListener(this);
 
-	private void stop_recording() {
-		//Stop Recording
-		mSensorManager.unregisterListener(this);
-		mLocManager.removeGpsStatusListener(this);
-		mLocManager.removeUpdates(this);
-//		Toast.makeText(this, "unregistering listeners", Toast.LENGTH_SHORT).show(); 
-
-		close_files();		
-//		Toast.makeText(this, "closing files", Toast.LENGTH_SHORT).show(); 
-
+			mLocManager.removeUpdates(this);
+//			Toast.makeText(this, "unregistering listeners", Toast.LENGTH_SHORT).show(); 
 	}
-
 
 
 	///////////Sensor Listener Callbacks
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// Do nothing		
-	}
-
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
 	public void onSensorChanged(SensorEvent ev) {
 		BufferedWriter file=fout[0];
@@ -344,42 +260,7 @@ public class LogService extends Service implements SensorEventListener, Location
 		Toast.makeText(this, arg0 + " provider disabled", Toast.LENGTH_SHORT).show();
 	}
 
-	public void onProviderEnabled(String arg0) {
-		Toast.makeText(this, arg0 + " provider enabled", Toast.LENGTH_SHORT).show();
-	}
+	public void onProviderEnabled(String arg0) {}
 
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		//		Toast.makeText(this, arg0 + " status changed :" + arg1, Toast.LENGTH_SHORT).show();
-	}
-
-	///////GPS status callback
-	public void onGpsStatusChanged(int status) {
-		BufferedWriter file=fout[2];
-
-		long tim=System.currentTimeMillis();
-
-		//Get the status
-		GpsStatus lStatus=null;
-		lStatus=mLocManager.getGpsStatus(null);
-
-		if (lStatus!=null) {
-			if (file!=null) {
-				try {
-					file.append("\n" + String.valueOf(tim)); //System time
-					Iterable<GpsSatellite> satlist=lStatus.getSatellites(); //Returns an array of GpsSatellite objects, which represent the current state of the GPS engine
-					for (GpsSatellite sat:satlist) {
-
-						file.append(", " + String.valueOf(sat.getPrn())); //Returns the PRN (pseudo-random number) for the satellite.
-						file.append(", " + String.valueOf(sat.getAzimuth())); //Returns the azimuth of the satellite in degrees. The azimuth can vary between 0 and 360
-						file.append(", " + String.valueOf(sat.getElevation())); //Returns the elevation of the satellite in degrees. The elevation can vary between 0 and 90.
-						file.append(", " + String.valueOf(sat.getSnr())); //Returns the signal to noise ratio for the satellite
-						file.append(";");
-					}
-				} catch (IOException e) {
-					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
-				}
-			}
-		}
-	}
-
+	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
 }

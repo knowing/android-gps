@@ -25,10 +25,10 @@ public class CLocProvStates implements Parcelable {
 				names[i]=aLList.get(i);
 				mintime[i]=0;
 				mindist[i]=0;
-				
+// CAREFUL: GPS AND NETWORK ARE NOW SET IN LOGSERVICE.JAVA, THIS IS ONLY FOR THE "show registered" FUNCTION!!!				
 				//Set active status
-//				if ((names[i].equals("gps")) || (names[i].equals("network")))
-				if (names[i].equals("gps"))
+				if ((names[i].equals("gps")) || (names[i].equals("network")))
+//				if (names[i].equals("gps"))
 					act_list[i]=true;
 				else
 					act_list[i]=false;				
