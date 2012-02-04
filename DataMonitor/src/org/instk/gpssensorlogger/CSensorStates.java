@@ -31,13 +31,12 @@ public class CSensorStates  implements Parcelable{
 				//Set type and active status
 				types[i]=aSList.get(i).getType();
 				act_list[i]=true;
-				rates[i]=SensorManager.SENSOR_DELAY_GAME;
+				rates[i]=SensorManager.SENSOR_DELAY_FASTEST;
 
 				switch (types[i]) {
 				case (Sensor.TYPE_ACCELEROMETER):
 					names[i]="accelerometer";
 //					act_list[i]=false;
-
 				break;
 				case (Sensor.TYPE_GYROSCOPE):
 					names[i]="gyroscope";
@@ -111,6 +110,10 @@ public class CSensorStates  implements Parcelable{
 	public int getType(int i) {
 		return types[i];
 	}
+	
+	public int getRate(int i) {
+		return rates[i];
+	}
 
 	//////////////////////////////////////////////////////////////////
 	//Required for Parcelable classes
@@ -151,7 +154,6 @@ public class CSensorStates  implements Parcelable{
 			source.readIntArray(rates);
 		}
 	}
-
 };
 
 
