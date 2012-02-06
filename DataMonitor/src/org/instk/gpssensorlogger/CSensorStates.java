@@ -31,7 +31,7 @@ public class CSensorStates  implements Parcelable{
 				//Set type and active status
 				types[i]=aSList.get(i).getType();
 				act_list[i]=true;
-				rates[i]=SensorManager.SENSOR_DELAY_FASTEST;
+				rates[i]=SensorManager.SENSOR_DELAY_FASTEST; // UNUSED!!
 
 				switch (types[i]) {
 				case (Sensor.TYPE_ACCELEROMETER):
@@ -68,15 +68,15 @@ public class CSensorStates  implements Parcelable{
 				break;
 				case (Sensor.TYPE_GRAVITY):
 					names[i]="gravity";
-				act_list[i]=false;
+//				act_list[i]=false;
 				break;
 				case (Sensor.TYPE_LINEAR_ACCELERATION):
 					names[i]="lin. acceleration";
-				act_list[i]=false;
+//				act_list[i]=false;
 				break;
 				case (Sensor.TYPE_ORIENTATION):
 					names[i]="orientation";
-				act_list[i]=false;
+//				act_list[i]=false;
 				break;
 				default:
 					names[i]=aSList.get(i).getName();

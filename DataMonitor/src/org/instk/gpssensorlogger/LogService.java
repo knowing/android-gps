@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +38,7 @@ public class LogService extends Service implements SensorEventListener, Location
 
 	private SensorManager mSensorManager;
 	private LocationManager mLocManager;
+	private NotificationManager mNotificationManager;
 
 	private BufferedWriter[] fout=new BufferedWriter[2];
 	private SimpleDateFormat day= new SimpleDateFormat("yyyyMMdd");
@@ -62,16 +66,28 @@ public class LogService extends Service implements SensorEventListener, Location
 				open_files();
 			} catch (FileNotFoundException e) {
 				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
-				stop_recording();			
+				stopSelf();			
 				e.printStackTrace();
 			} catch (IOException e) {
 				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
-				stop_recording();
+				stopSelf();
 				e.printStackTrace();
 			}
-			Toast.makeText(getApplicationContext(), "opening files", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(getApplicationContext(), "opening files", Toast.LENGTH_SHORT).show();
 			register_listeners();
-			Toast.makeText(getApplicationContext(), "registering listeners", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(getApplicationContext(), "registering listeners", Toast.LENGTH_SHORT).show();
+			
+			// Status Bar Notification
+			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			Notification notification = new Notification(R.drawable.ic_launcher2, "Logging service started",
+			        System.currentTimeMillis());
+			Intent notificationIntent = new Intent(getApplicationContext(), main.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+			notification.setLatestEventInfo(getApplicationContext(), "GPS and Sensor Logger",
+			        "Logging service running", pendingIntent);
+			notification.flags = Notification.FLAG_ONGOING_EVENT;
+			mNotificationManager.notify(1, notification);
+			
 		}
 	}
 
@@ -112,6 +128,7 @@ public class LogService extends Service implements SensorEventListener, Location
 	@Override
 	public void onDestroy() {	// The service is no longer used and is being destroyed
 		stop_recording();
+		mNotificationManager.cancelAll();
 //		Toast.makeText(this, "destroying service", Toast.LENGTH_SHORT).show(); 
 		super.onDestroy();
 	}
@@ -195,7 +212,7 @@ public class LogService extends Service implements SensorEventListener, Location
 
 		//Register listeners for active location providers
 		if (bfout[1]!=null) {	
-			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 10s, mindist 2m
+			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 1min, mindist 20m
 			mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 2, this); //mintime 10s, mindist 2m
 		}
 	}
@@ -228,7 +245,7 @@ public class LogService extends Service implements SensorEventListener, Location
 				file.append(", " + (String.valueOf(ev.values[i])));
 			file.append(";");
 		} catch (IOException e) {
-			Toast.makeText(this, "Error: Could not write to file!4", Toast.LENGTH_SHORT).show();			
+			Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();			
 		}
 	}
 

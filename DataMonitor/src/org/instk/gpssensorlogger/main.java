@@ -68,8 +68,8 @@ public class main extends Activity implements OnClickListener {
 		alert.show();
 	}
 
-    public static final String PREFS_NAME = "MyPrefsFile";
-	
+	public static final String PREFS_NAME = "MyPrefsFile";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -97,7 +97,7 @@ public class main extends Activity implements OnClickListener {
 
 		TextView ltv1 = (TextView) findViewById(R.id.Atv1);
 		//		ltv1.setText("This application was developed from the source codes available at github.com/yigiter/");
-		ltv1.setText("Acceleration, GPS, Fastest delay"); //change comment here
+		ltv1.setText("Acquired sensor data (25Hz): acceleration, linear acceleration, gravity and orientation sensor\nAcquired location data: GPS and network provider"); //change comment here
 		//		Linkify.addLinks(ltv1, Linkify.ALL);
 
 		lbtn_start.setOnClickListener(this);
@@ -107,10 +107,10 @@ public class main extends Activity implements OnClickListener {
 
 		//retrieve preferences
 		SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-		mLV.addtext(mPrefs.getString("Logfile", "File Location:  " + file_location(null) + "\n"));  // save logfile
+		mLV.setText(mPrefs.getString("Logfile", "File Location:  " + file_location(null)));  // save logfile
 		lbtn_start.setEnabled(mPrefs.getBoolean("StartButton", true)); // save start button status
 		lbtn_stop.setEnabled(mPrefs.getBoolean("StopButton", false)); // save stop button status
-		
+
 
 		if (savedInstanceState != null) {
 			// Restore UI state from the savedInstanceState.
@@ -124,9 +124,9 @@ public class main extends Activity implements OnClickListener {
 	}
 
 	// TODO Save content of logfile in outstate bundle outstate by onSaveInstanceState(Bundle) and retrieve by onRestoreInstanceState(Bundle)
-	// Funktioniert das bei vollem Speicher?
+	// Funktioniert das auch bei vollem Speicher?
 
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -135,65 +135,44 @@ public class main extends Activity implements OnClickListener {
 		// All objects are from android.context.Context
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 		SharedPreferences.Editor ed = settings.edit();
-        ed.putBoolean("StartButton",  mbtn_start.isEnabled()); // save start button status
-        ed.putBoolean("StopButton",  mbtn_stop.isEnabled()); // save stop button status
-        ed.putString("Logfile", mLV.getText().toString());  // save logfile
+		ed.putBoolean("StartButton",  mbtn_start.isEnabled()); // save start button status
+		ed.putBoolean("StopButton",  mbtn_stop.isEnabled()); // save stop button status
+		ed.putString("Logfile", mLV.getText().toString());  // save logfile
 
-        ed.commit();
+		ed.commit();
 
 	}
 
 	@Override
 	protected void onResume() {
-		super.onResume();
-//        if (savedInstanceState == null) {
-//		lbtn_stop.setEnabled(false);
-//		mLV.addtext("File Location:  " + file_location(null) + "\n");
-//        }else{
-//		// Restore UI state from the savedInstanceState.
-//		lbtn_start.setEnabled(savedInstanceState.getBoolean("StartButton"));
-//		lbtn_stop.setEnabled(savedInstanceState.getBoolean("StopButton"));
-//		mLV.addtext(savedInstanceState.getString("Logfile"));  // retrieve former logfile
-//        }
-		
+		super.onResume();	
 	}
 
-    @Override
-    protected void onStop(){
-       super.onStop();
+	@Override
+	protected void onStop(){
+		super.onStop();
+	}
 
-      // We need an Editor object to make preference changes.
-      // All objects are from android.context.Context
-      SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-      SharedPreferences.Editor ed = settings.edit();
-      ed.putBoolean("StartButton",  mbtn_start.isEnabled()); // save start button status
-      ed.putBoolean("StopButton",  mbtn_stop.isEnabled()); // save stop button status
-      ed.putString("Logfile", mLV.getText().toString());  // save logfile
 
-      // Commit the edits!
-      ed.commit();
-    }
-
-	
 	@Override
 	protected void onDestroy() { 
 		mLV.addtext("Application killed.");
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-	  // Save UI state changes to the savedInstanceState.
-	  // This bundle will be passed to onCreate if the process is
-	  // killed and restarted.
-	  savedInstanceState.putBoolean("StartButton",  mbtn_start.isEnabled()); // save start button status
-	  savedInstanceState.putBoolean("StopButton",  mbtn_stop.isEnabled()); // save stop button status
-	  savedInstanceState.putString("Logfile", mLV.getText().toString());  // save logfile
-	  // etc.
-	  super.onSaveInstanceState(savedInstanceState);
+		// Save UI state changes to the savedInstanceState.
+		// This bundle will be passed to onCreate if the process is
+		// killed and restarted.
+		savedInstanceState.putBoolean("StartButton",  mbtn_start.isEnabled()); // save start button status
+		savedInstanceState.putBoolean("StopButton",  mbtn_stop.isEnabled()); // save stop button status
+		savedInstanceState.putString("Logfile", mLV.getText().toString());  // save logfile
+		// etc.
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	
+
 
 	public void onClick(View arg0) {
 		String daytime=dt.format(new Date());
@@ -203,182 +182,231 @@ public class main extends Activity implements OnClickListener {
 			mbtn_start.setEnabled(false);
 			mbtn_stop.setEnabled(true);
 
+			//Open files
+			try {
+				open_files();
+			} catch (FileNotFoundException e) {
+				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			} catch (IOException e) {
+				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
+		
 			//Start service
 			Intent intent = new Intent(this, LogService.class);
 			startService(intent);
 
 			//Logview
 			String ftag=dt.format(new Date());
-			mLV.addtext("Started Logging: " + ftag);
-		}
-		else if (arg0.getId()==R.id.DLbtn2) { //Stop Recording
-			Intent intent = new Intent(this, LogService.class);
-			stopService(intent);
-			mLV.addtext("Stopped Logging: " + daytime + "\n");
-
-			record_comment();
-			close_files();		
-			//			Toast.makeText(this, "closing files", Toast.LENGTH_SHORT).show(); 
-
-			//Adjust view
-			mbtn_start.setEnabled(true);
-			mbtn_stop.setEnabled(false);
-		}
-		else if (arg0.getId()==R.id.DLbtn3) { //Save console to file
-			dump_console();
-			mLV.addtext("Logfile saved \n");
-		}
-		else if (arg0.getId()==R.id.DLbtn4) { //Show registered
-			show_registered();
-//			mLV.addtext("Currently not available\n");
-		}
-	}
-
-	private void show_registered() { //Show registered
-		CSensorStates lSenStates=mSenStates;
-		CLocProvStates lLPStates=mLPStates;
-
-		String nt="REGISTERED SOURCES: \n";
-		nt=nt + "SENSORS: Total Number: " + mSenStates.getNum() + " Active:" + mSenStates.getNumAct() + "\n";
-		int n=0;
-		for (int i=0;i<lSenStates.getNum();i++) {
-			if (lSenStates.getActive(i))
-				nt=nt + lSenStates.getName(i) + " (active)\n";
-			else
-				nt=nt + lSenStates.getName(i) + " (inactive) \n";
-			n++;
-		}
-		nt=nt + "PROVIDERS: Total Number: " + mLPStates.getNum() + " Active:" + mLPStates.getNumAct() + "(Possibly not up to date)\n";
-		for (int i=0;i<lLPStates.getNum();i++) {
-			if (lLPStates.getActive(i))
-				nt=nt + lLPStates.getName(i) + " (active) \n";
-			else
-				nt=nt + lLPStates.getName(i) + " (inactive) \n";
-			n++;
+			mLV.addtext("\nStarted Logging: " + ftag);
 		}
 
-		if (n==0) {
-			nt="No Registered Source.";
+			else if (arg0.getId()==R.id.DLbtn2) { //Stop Recording
+				Intent intent = new Intent(this, LogService.class);
+				stopService(intent);
+				mLV.addtext("Stopped Logging: " + daytime);
+
+				record_comment(); // incl. close_files()
+
+				//Adjust view
+				mbtn_start.setEnabled(true);
+				mbtn_stop.setEnabled(false);
+			}
+			else if (arg0.getId()==R.id.DLbtn3) { //Save console to file
+				dump_console();
+				mLV.addtext("Logfile saved \n");
+			}
+			else if (arg0.getId()==R.id.DLbtn4) { //Show registered
+				show_registered();
+				//			mLV.addtext("Currently not available\n");
+			}
 		}
 
-		mLV.addtext(nt + "\n");
-	}
+		private void show_registered() { //Show registered
+			CSensorStates lSenStates=mSenStates;
+			CLocProvStates lLPStates=mLPStates;
 
-
-	private File file_location(String ntag) {
-
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			String ftag=day.format(new Date()); // Nur Tag als Dateiname
-			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger/v1.0"); //speichert in sdcard/GPSSensorLogger
-			if (!root.exists()) {
-				root.mkdirs();
+			String nt="REGISTERED SOURCES: \n";
+			nt=nt + "SENSORS: Total Number: " + mSenStates.getNum() + " Active:" + mSenStates.getNumAct() + "\n";
+			int n=0;
+			for (int i=0;i<lSenStates.getNum();i++) {
+				if (lSenStates.getActive(i))
+					nt=nt + lSenStates.getName(i) + " (active)\n";
+				else
+					nt=nt + lSenStates.getName(i) + " (inactive) \n";
+				n++;
+			}
+			nt=nt + "PROVIDERS: Total Number: " + mLPStates.getNum() + " Active:" + mLPStates.getNumAct() + "(Possibly not up to date)\n";
+			for (int i=0;i<lLPStates.getNum();i++) {
+				if (lLPStates.getActive(i))
+					nt=nt + lLPStates.getName(i) + " (active) \n";
+				else
+					nt=nt + lLPStates.getName(i) + " (inactive) \n";
+				n++;
 			}
 
-			if (ntag == null) {
-				return root;
-			} else
-				return new File(root, ntag+ftag+".m");
-			//  return new File(getExternalFilesDir(null), ntag + ftag + ".m");		Speichert in android/data/files/org.instk.gpssensorlogger  
+			if (n==0) {
+				nt="No Registered Source.";
+			}
 
-		} else {
-			// We can not read and write the media
-			mLV.addtext("No external Storage.");
-			return null;
+			mLV.addtext(nt + "\n");
 		}
-	}
-
-	private void record_comment() {
-		//Dialog Window to add comments
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-		alert.setTitle("Any comments?");
-		alert.setMessage("Please comment on transport mode and route:");
-
-		// Set an EditText view to get user input 
-		final EditText input = new EditText(this);
-		alert.setView(input);
-
-		CSensorStates lSenStates=mSenStates;
-		final int rate = lSenStates.getRate(0);
 
 
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				String comment = input.getText().toString();
+		private File file_location(String ntag) {
 
-				BufferedWriter file0=fout[0], file1 = fout[1];
-				String daytime=dt.format(new Date());
+			String state = Environment.getExternalStorageState();
 
+			if (Environment.MEDIA_MOUNTED.equals(state)) {
+				// We can read and write the media
+				String ftag=day.format(new Date()); // Nur Tag als Dateiname
+				File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger/v1.0"); //speichert in sdcard/GPSSensorLogger
+				if (!root.exists()) {
+					root.mkdirs();
+				}
+
+				if (ntag == null) {
+					return root;
+				} else
+					return new File(root, ntag+ftag+".m");
+				//  return new File(getExternalFilesDir(null), ntag + ftag + ".m");		Speichert in android/data/files/org.instk.gpssensorlogger  
+
+			} else {
+				// We can not read and write the media
+				mLV.addtext("No external Storage.");
+				return null;
+			}
+		}
+
+		private void open_files() throws IOException, FileNotFoundException {	//open files
+			//References
+			BufferedWriter[] bfout=fout;
+			String start_text=null;
+
+			// Sensors		
+			if (file_location("accelerometer_").exists())
+				start_text = "";
+			else
+				start_text = "% ACCELEROMETER\n\n% Attributes:\n% system time, time stamp, sensor type, x_value, y_value, z_value \n\nacc = [";
+
+			bfout[0]=new BufferedWriter(new FileWriter(file_location("accelerometer_"), true));
+			BufferedWriter file0=fout[0];
+
+			if (file0!=null) {
 				try {
-					if (file0!=null)
-						file0.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " ("+rate+",acc,gps)\n"); //change comment here
-					if (file1!=null)
-						file1.append("\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " ("+rate+",acc,gps)\n"); //change comment here
-					mLV.addtext("Saved comment.");
+					file0.append(start_text);
 				} catch (IOException e) {
-					mLV.addtext("Error: Could not write to file!");
+					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
 				}
 			}
-		});
 
-		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				BufferedWriter file0=fout[0], file1 = fout[1];
-				String daytime=dt.format(new Date());
+			// Location Provider
+			if (file_location("locprovider_").exists())
+				start_text = "";
+			else
+				start_text = "% NETWORK PROVIDER\n\n% Attributes:\n% system time, provider name (3 for gps, 7 for network), 0, pr. accuracy, " +
+						"pr. latitude, pr. longitude, pr. bearing, pr. speed \n\n" + "provider = [";
 
+			bfout[1]=new BufferedWriter(new FileWriter(file_location("locprovider_"), true));
+			BufferedWriter file1=fout[1];
+
+			if (file1!=null) {
 				try {
-					if (file0!=null)
-						file0.append("\n\n% NO COMMENT ( " + daytime + ", "+rate+",acc,gps)"); //change comment here
-					if (file1!=null)
-						file1.append("\n\n% NO COMMENT ( " + daytime + ", "+rate+",acc,gps)"); //change comment here
+					file1.append(start_text);
 				} catch (IOException e) {
-					mLV.addtext("Error: Could not write to file!");
+					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
 				}
-				// Canceled.
-			}
-		});
-		alert.show();
-
-
-		//Adjust view
-		mbtn_start.setEnabled(true);
-		mbtn_stop.setEnabled(false);
-	}
-
-
-	private void dump_console() {
-		try {
-			String daytime=dt.format(new Date());
-			BufferedWriter file = new BufferedWriter(new FileWriter(file_location("log_"), true));
-			file.append("LOGFILE ( " + daytime + ")\n" + mLV.getText().toString() + "\n\n");
-			file.close();
+			}			
 		}
-		catch (FileNotFoundException e) {
-			mLV.addtext("Error: Could not open file for writing");
-		}
-		catch (IOException e1) {
-			mLV.addtext("Error: Could not save file!");
-		}
-	}
 
-	private void close_files() {	//close files
-		BufferedWriter[] bfout=fout;
-		if (bfout[0]!=null)
+		private void record_comment() {
+			//Dialog Window to add comments
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+			alert.setTitle("Any comments?");
+			alert.setMessage("Please comment on transport mode and route:");
+
+			// Set an EditText view to get user input 
+			final EditText input = new EditText(this);
+			alert.setView(input);
+
+			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					String comment = input.getText().toString();
+					BufferedWriter[] bfout=fout;
+
+//					BufferedWriter file0=fout[0], file1 = fout[1];
+					String daytime=dt.format(new Date());
+					String text = "\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (acc, lin acc, grav, orn at 25Hz,gps (10s,2m), network (60s,20m))\n";  //change comment here
+
+					try {
+						if (bfout[0]!=null)
+							bfout[0].append(text); 
+						if (bfout[1]!=null)
+							bfout[1].append(text);
+						mLV.addtext("Saved comment: "+comment);
+						close_files();		
+					} catch (IOException e) {
+						mLV.addtext("Error: Could not write to file!");
+						close_files();		
+					}
+				}
+			});
+
+			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					BufferedWriter file0=fout[0], file1 = fout[1];
+					String daytime=dt.format(new Date());
+					String text = "\n\n% NO COMMENT ( " + daytime + ", acc, lin acc, grav, orn at 25Hz,gps (10s,2m), network (60s,20m))";  //change comment here
+
+					try {
+						if (file0!=null)
+							file0.append(text); 
+						if (file1!=null)
+							file1.append(text);
+						close_files();	
+					} catch (IOException e) {
+						mLV.addtext("Error: Could not write to file!");
+						close_files();	
+					}
+					// Canceled.
+				}
+			});
+			alert.show();
+					}
+
+
+		private void dump_console() {
 			try {
-				bfout[0].close();
-			} catch (IOException e) {
-				Toast.makeText(this, "File close error: Sensors" , Toast.LENGTH_SHORT).show();
+				String daytime=dt.format(new Date());
+				BufferedWriter file = new BufferedWriter(new FileWriter(file_location("log_"), true));
+				file.append("LOGFILE ( " + daytime + ")\n" + mLV.getText().toString() + "\n\n");
+				file.close();
 			}
+			catch (FileNotFoundException e) {
+				mLV.addtext("Error: Could not open file for writing");
+			}
+			catch (IOException e1) {
+				mLV.addtext("Error: Could not save file!");
+			}
+		}
 
-		if (bfout[1]!=null)
-			try {
-				bfout[1].close();
-			} catch (IOException e) {
-				Toast.makeText(this, "File close error: Location", Toast.LENGTH_SHORT).show();
-			}
+		private void close_files() {	//close files
+			BufferedWriter[] bfout=fout;
+			if (bfout[0]!=null)
+				try {
+					bfout[0].close();
+				} catch (IOException e) {
+					Toast.makeText(this, "File close error: Sensors" , Toast.LENGTH_SHORT).show();
+				}
+
+			if (bfout[1]!=null)
+				try {
+					bfout[1].close();
+				} catch (IOException e) {
+					Toast.makeText(this, "File close error: Location", Toast.LENGTH_SHORT).show();
+				}
+		}
+
 	}
-
-}
