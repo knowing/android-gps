@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+//import java.io.FileNotFoundException;
+//import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,36 +60,36 @@ public class LogService extends Service implements SensorEventListener, Location
 			//Get the names of all sensor sources
 			mSenStates = new CSensorStates(mSensorManager.getSensorList(Sensor.TYPE_ALL)); //nur noch Accelerometer
 
-//			Sensor mAccelerometer;
-//			mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);			
-//			mSensorManager.registerListener(this, mAccelerometer, 40);
-			
+			//			Sensor mAccelerometer;
+			//			mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);			
+			//			mSensorManager.registerListener(this, mAccelerometer, 40);
+
+			// open files
 			try {
 				open_files();
 			} catch (FileNotFoundException e) {
-				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_LONG).show();
 				stopSelf();			
 				e.printStackTrace();
 			} catch (IOException e) {
-				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_LONG).show();
 				stopSelf();
 				e.printStackTrace();
 			}
-//			Toast.makeText(getApplicationContext(), "opening files", Toast.LENGTH_SHORT).show();
+
+			// register event listeners
 			register_listeners();
-//			Toast.makeText(getApplicationContext(), "registering listeners", Toast.LENGTH_SHORT).show();
-			
-			// Status Bar Notification
+
+			// Set Status Bar Notification
 			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			Notification notification = new Notification(R.drawable.ic_launcher2, "Logging service started",
-			        System.currentTimeMillis());
+					System.currentTimeMillis());
 			Intent notificationIntent = new Intent(getApplicationContext(), main.class);
 			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
 			notification.setLatestEventInfo(getApplicationContext(), "GPS and Sensor Logger",
-			        "Logging service running", pendingIntent);
+					"Logging service running", pendingIntent);
 			notification.flags = Notification.FLAG_ONGOING_EVENT;
 			mNotificationManager.notify(1, notification);
-			
 		}
 	}
 
@@ -108,7 +110,6 @@ public class LogService extends Service implements SensorEventListener, Location
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-//		Toast.makeText(this, "starting service", Toast.LENGTH_SHORT).show();
 
 		// For each start request, send a message to start a job and deliver the start ID so we know which request we're stopping when we finish the job
 		Message msg = mServiceHandler.obtainMessage();
@@ -119,7 +120,6 @@ public class LogService extends Service implements SensorEventListener, Location
 		return START_REDELIVER_INTENT;
 	}
 
-
 	@Override
 	public IBinder onBind(Intent arg0) {		// We don't provide binding, so return null
 		return null;
@@ -129,7 +129,6 @@ public class LogService extends Service implements SensorEventListener, Location
 	public void onDestroy() {	// The service is no longer used and is being destroyed
 		stop_recording();
 		mNotificationManager.cancelAll();
-//		Toast.makeText(this, "destroying service", Toast.LENGTH_SHORT).show(); 
 		super.onDestroy();
 	}
 
@@ -137,25 +136,24 @@ public class LogService extends Service implements SensorEventListener, Location
 		//References
 		BufferedWriter[] bfout=fout;
 		String start_text=null;
-		
-// Sensors		
-			if (file_location("accelerometer_").exists())
-				start_text = "";
-			else
-				start_text = "% ACCELEROMETER\n\n% Attributes:\n% system time, time stamp, sensor type, x_value, y_value, z_value \n\nacc = [";
-			
-			bfout[0]=new BufferedWriter(new FileWriter(file_location("accelerometer_"), true));
-			BufferedWriter file0=fout[0];
-			
-			if (file0!=null) {
-				try {
-					file0.append(start_text);
-				} catch (IOException e) {
-					Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
-				}
+
+		// Sensors
+		if (file_location("accelerometer_").exists())
+			start_text = "";
+		else
+			start_text = "% ACCELEROMETER\n\n% Attributes:\n% system time, time stamp, sensor type, x_value, y_value, z_value \n\nacc = [";
+
+		bfout[0]=new BufferedWriter(new FileWriter(file_location("accelerometer_"), true));
+
+		if (bfout[0]!=null) {
+			try {
+				bfout[0].append(start_text);
+			} catch (IOException e) {
+				Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
 			}
-		
-// Location Provider
+		}
+
+		// Location Provider
 		if (file_location("locprovider_").exists())
 			start_text = "";
 		else
@@ -163,15 +161,14 @@ public class LogService extends Service implements SensorEventListener, Location
 					"pr. latitude, pr. longitude, pr. bearing, pr. speed \n\n" + "provider = [";
 
 		bfout[1]=new BufferedWriter(new FileWriter(file_location("locprovider_"), true));
-		BufferedWriter file1=fout[1];
-		
-		if (file1!=null) {
+
+		if (bfout[1]!=null) {
 			try {
-				file1.append(start_text);
+				bfout[1].append(start_text);
 			} catch (IOException e) {
 				Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();
 			}
-		}			
+		} 
 	}
 
 
@@ -191,6 +188,7 @@ public class LogService extends Service implements SensorEventListener, Location
 				return root;
 			} else
 				return new File(root, ntag+ftag+".m");
+			//  return new File(getExternalFilesDir(null), ntag + ftag + ".m");		Speichert in android/data/files/org.instk.gpssensorlogger  
 		} else { // We can not read and write the media
 			Toast.makeText(this, "No external Storage.", Toast.LENGTH_SHORT).show();
 			return null;
@@ -212,24 +210,40 @@ public class LogService extends Service implements SensorEventListener, Location
 
 		//Register listeners for active location providers
 		if (bfout[1]!=null) {	
-			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 1min, mindist 20m
+			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 60s, mindist 20m
 			mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 2, this); //mintime 10s, mindist 2m
 		}
 	}
 
-		private void stop_recording() {
-			//Stop Recording
-			mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
-			mSensorManager.unregisterListener(this);
-
-			mLocManager.removeUpdates(this);
-//			Toast.makeText(this, "unregistering listeners", Toast.LENGTH_SHORT).show(); 
+	private void stop_recording() {
+		//Stop Recording
+		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY));
+		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION));
+		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+		mSensorManager.unregisterListener(this);
+		mLocManager.removeUpdates(this);
+		close_files();
 	}
 
+	private void close_files() {	//close files
+		BufferedWriter[] bfout=fout;
+		if (bfout[0]!=null)
+			try {
+				bfout[0].close();
+			} catch (IOException e) {
+				Toast.makeText(this, "File close error: Sensors" , Toast.LENGTH_SHORT).show();
+			}
+
+		if (bfout[1]!=null)
+			try {
+				bfout[1].close();
+			} catch (IOException e) {
+				Toast.makeText(this, "File close error: Location", Toast.LENGTH_SHORT).show();
+			}
+	}
 
 	///////////Sensor Listener Callbacks
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
 	public void onSensorChanged(SensorEvent ev) {
 		BufferedWriter file=fout[0];
 
@@ -245,9 +259,12 @@ public class LogService extends Service implements SensorEventListener, Location
 				file.append(", " + (String.valueOf(ev.values[i])));
 			file.append(";");
 		} catch (IOException e) {
-			Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();			
+			// TODO Hier erscheint nach Beenden des Services folgende Fehlermeldung: Anscheinend ist die Datei geschlossen, bevor der Listener beendet ist
+//			Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();			
 		}
 	}
+
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
 
 	/////////Location provider callbacks
@@ -280,4 +297,5 @@ public class LogService extends Service implements SensorEventListener, Location
 	public void onProviderEnabled(String arg0) {}
 
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
+
 }
