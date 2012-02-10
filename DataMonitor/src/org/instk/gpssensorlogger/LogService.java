@@ -131,7 +131,7 @@ public class LogService extends Service implements SensorEventListener, Location
 	public void onDestroy() {	// The service is no longer used and is being destroyed
 		stop_recording();
 		mNotificationManager.cancelAll();
-		super.onDestroy();
+		super.onDestroy(); 
 	}
 
 	private void open_files() throws IOException, FileNotFoundException {	//open files

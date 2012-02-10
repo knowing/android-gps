@@ -273,7 +273,7 @@ public class main extends Activity implements OnClickListener {
 		} catch (IOException e) {
 			Toast.makeText(getApplicationContext(), "File open error: Probably you do not have required permissions.", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
-		}
+		} 
 
 		//Dialog Window to add comments
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
