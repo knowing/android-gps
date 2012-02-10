@@ -35,6 +35,7 @@ import android.widget.Toast;
 public class LogService extends Service implements SensorEventListener, LocationListener{
 	private Looper mServiceLooper;
 	private ServiceHandler mServiceHandler;
+	private HandlerThread mHandlerThread;;
 
 	CSensorStates mSenStates;
 
@@ -54,7 +55,7 @@ public class LogService extends Service implements SensorEventListener, Location
 		@Override
 		public void handleMessage(Message msg) {
 			// Acquire a reference to the system Sensor and Location Manager
-			mSensorManager=(SensorManager) getSystemService(SENSOR_SERVICE);
+			mSensorManager=(SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			mLocManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 			//Get the names of all sensor sources
@@ -99,12 +100,13 @@ public class LogService extends Service implements SensorEventListener, Location
 	public void onCreate() {
 		// Start up the thread running the service.  Note that we create a separate thread because the service normally runs in the process's
 		// main thread, which we don't want to block.  We also make it background priority so CPU-intensive work will not disrupt our UI.
-		HandlerThread thread = new HandlerThread("ServiceStartArguments");
+		HandlerThread thread = new HandlerThread("DataLogging");
 		thread.start();
 
 		// Get the HandlerThread's Looper and use it for our Handler 
 		mServiceLooper = thread.getLooper();
 		mServiceHandler = new ServiceHandler(mServiceLooper);
+		super.onCreate(); //anders
 	}
 
 
@@ -199,12 +201,16 @@ public class LogService extends Service implements SensorEventListener, Location
 	private void register_listeners() {
 		CSensorStates lSenStates=mSenStates;
 		BufferedWriter[] bfout=fout;
+		
+		mHandlerThread = new HandlerThread("SensorLogThread");
+		mHandlerThread.start();
+		Handler handler = new Handler(mHandlerThread.getLooper());
 
 		//Register the sensors
 		if (bfout[0]!=null) {
 			for (int i=0;i<lSenStates.getNum();i++) {
 				if (lSenStates.getActive(i))
-					mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(lSenStates.getType(i)), 40);			// 40ms -> 25 Hz
+					mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(lSenStates.getType(i)), 40, handler);			// 40ms -> 25 Hz
 			}
 		}
 
@@ -217,13 +223,21 @@ public class LogService extends Service implements SensorEventListener, Location
 
 	private void stop_recording() {
 		//Stop Recording
-		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
-		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY));
-		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION));
-		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY));
+//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION));
+//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
 		mSensorManager.unregisterListener(this);
 		mLocManager.removeUpdates(this);
 		close_files();
+		
+		mHandlerThread.interrupt(); // <-- OK
+	    try {
+	    	mHandlerThread.join(1000);
+		} catch (InterruptedException e) {
+			Toast.makeText(this, "Thread can't be stopped" , Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		} // optionally wait for the thread to exit
 	}
 
 	private void close_files() {	//close files
@@ -260,7 +274,7 @@ public class LogService extends Service implements SensorEventListener, Location
 			file.append(";");
 		} catch (IOException e) {
 			// TODO Hier erscheint nach Beenden des Services folgende Fehlermeldung: Anscheinend ist die Datei geschlossen, bevor der Listener beendet ist
-//			Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();			
+			Toast.makeText(this, "Error: Could not write to file!", Toast.LENGTH_SHORT).show();			
 		}
 	}
 
