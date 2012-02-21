@@ -83,7 +83,7 @@ public class LogService extends Service implements SensorEventListener, Location
 
 			// Set Status Bar Notification
 			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			Notification notification = new Notification(R.drawable.ic_launcher2, "Logging service started",
+			Notification notification = new Notification(R.drawable.ic_launcher, "Logging service started",
 					System.currentTimeMillis());
 			Intent notificationIntent = new Intent(getApplicationContext(), main.class);
 			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);

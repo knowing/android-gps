@@ -181,7 +181,6 @@ public class main extends Activity implements OnClickListener {
 		else if (arg0.getId()==R.id.DLbtn3) {
 			//Save console to file
 			dump_console();
-			mLV.addtext("Logfile saved \n");
 		}
 		
 		else if (arg0.getId()==R.id.DLbtn4) {
@@ -346,6 +345,7 @@ public class main extends Activity implements OnClickListener {
 			BufferedWriter file = new BufferedWriter(new FileWriter(file_location("log_"), true));
 			file.append("LOGFILE ( " + daytime + ")\n\n\n" + mLV.getText().toString() + "\n\n");
 			file.close();
+			mLV.addtext("Logfile saved \n");
 		}
 		catch (FileNotFoundException e) {
 			mLV.addtext("Error: Could not open file for writing");
