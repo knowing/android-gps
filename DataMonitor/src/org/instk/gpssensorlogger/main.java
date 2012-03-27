@@ -43,6 +43,8 @@ public class main extends Activity implements OnClickListener {
 
 	SensorManager mSenMan;
 	LocationManager mLocMan;
+	
+	Intent mIntentLogService; // LogService - Thread
 
 	Button mbtn_start,mbtn_stop;
 
@@ -111,6 +113,9 @@ public class main extends Activity implements OnClickListener {
 
 		mbtn_start=lbtn_start;
 		mbtn_stop=lbtn_stop;		
+		
+		// Create Logservice-Thread
+        mIntentLogService = new Intent(this, LogService.class);
 	}
 
 	// TODO Save content of logfile in outstate bundle outstate by onSaveInstanceState(Bundle) and retrieve by onRestoreInstanceState(Bundle)
@@ -154,8 +159,7 @@ public class main extends Activity implements OnClickListener {
 			mbtn_stop.setEnabled(true);
 
 			//Start service
-			Intent intent = new Intent(this, LogService.class);
-			startService(intent);
+			startService(mIntentLogService);
 
 			//Log
 			String ftag=dt.format(new Date());
@@ -164,8 +168,7 @@ public class main extends Activity implements OnClickListener {
 
 		else if (arg0.getId()==R.id.DLbtn2) { //Stop Recording
 			//Stop service
-			Intent intent = new Intent(this, LogService.class);
-			stopService(intent);
+			stopService(mIntentLogService);
 			
 			//Log
 			mLV.addtext("Stopped Logging: " + daytime);
