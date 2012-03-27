@@ -50,10 +50,6 @@ public class CSensorStates  implements Parcelable{
 					names[i]="magnetic field";
 					act_list[i]=false;
 				break;
-				case (Sensor.TYPE_ROTATION_VECTOR):
-					names[i]="rotation vector";
-					act_list[i]=false;
-				break;
 				case (Sensor.TYPE_LIGHT):
 					names[i]="light";
 					act_list[i]=false;
@@ -65,14 +61,6 @@ public class CSensorStates  implements Parcelable{
 				case (Sensor.TYPE_TEMPERATURE):
 					names[i]="temperature";
 					act_list[i]=false;
-				break;
-				case (Sensor.TYPE_GRAVITY):
-					names[i]="gravity";
-//				act_list[i]=false;
-				break;
-				case (Sensor.TYPE_LINEAR_ACCELERATION):
-					names[i]="lin. acceleration";
-//				act_list[i]=false;
 				break;
 				case (Sensor.TYPE_ORIENTATION):
 					names[i]="orientation";

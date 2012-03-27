@@ -79,7 +79,7 @@ public class main extends Activity implements OnClickListener {
 
 		TextView ltv1 = (TextView) findViewById(R.id.Atv1);
 		//		ltv1.setText("This application was developed from the source codes available at github.com/yigiter/");
-		ltv1.setText("Acquired sensor data (25Hz): acceleration, linear acceleration, gravity and orientation sensor\nAcquired location data: GPS and network provider"); //change comment here
+		ltv1.setText("Acquired sensor data (25Hz): acceleration and orientation sensor\nAcquired location data: GPS and network provider"); //change comment here
 		//		Linkify.addLinks(ltv1, Linkify.ALL);
 
 		lbtn_start.setOnClickListener(this);
