@@ -44,7 +44,7 @@ public class main extends Activity implements OnClickListener {
 	SensorManager mSenMan;
 	LocationManager mLocMan;
 	
-	Intent mIntentLogService; // LogService - Thread
+	Intent mIntentLogService; // LogService - Intent /Service
 
 	Button mbtn_start,mbtn_stop;
 
@@ -82,7 +82,6 @@ public class main extends Activity implements OnClickListener {
 		TextView ltv1 = (TextView) findViewById(R.id.Atv1);
 		//		ltv1.setText("This application was developed from the source codes available at github.com/yigiter/");
 		ltv1.setText("Acquired sensor data (25Hz): acceleration and orientation sensor\nAcquired location data: GPS and network provider"); //change comment here
-		//		Linkify.addLinks(ltv1, Linkify.ALL);
 
 		lbtn_start.setOnClickListener(this);
 		lbtn_stop.setOnClickListener(this);
@@ -114,7 +113,7 @@ public class main extends Activity implements OnClickListener {
 		mbtn_start=lbtn_start;
 		mbtn_stop=lbtn_stop;		
 		
-		// Create Logservice-Thread
+		// Create Logservice Intent
         mIntentLogService = new Intent(this, LogService.class);
 	}
 
@@ -158,7 +157,7 @@ public class main extends Activity implements OnClickListener {
 			mbtn_start.setEnabled(false);
 			mbtn_stop.setEnabled(true);
 
-			//Start service
+			//Start intent LogService
 			startService(mIntentLogService);
 
 			//Log
@@ -167,7 +166,7 @@ public class main extends Activity implements OnClickListener {
 		}
 
 		else if (arg0.getId()==R.id.DLbtn2) { //Stop Recording
-			//Stop service
+			//Stop intent LogService
 			stopService(mIntentLogService);
 			
 			//Log

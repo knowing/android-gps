@@ -181,7 +181,7 @@ public class LogService extends Service implements SensorEventListener, Location
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			// We can read and write the media
 			String ftag=day.format(new Date()); // date is filename
-			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger/v1.0"); // saved in sdcard/GPSSensorLogger
+			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger"); // saved in sdcard/GPSSensorLogger
 			if (!root.exists()) {
 				root.mkdirs();
 			}
@@ -224,20 +224,9 @@ public class LogService extends Service implements SensorEventListener, Location
 	private void stop_recording() {
 		//Stop Recording
 //		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
-//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY));
-//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION));
-//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
 		mSensorManager.unregisterListener(this);
 		mLocManager.removeUpdates(this);
 		close_files();
-		
-		mHandlerThread.interrupt(); // <-- OK
-	    try {
-	    	mHandlerThread.join(1000);
-		} catch (InterruptedException e) {
-			Toast.makeText(this, "Thread can't be stopped" , Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		} // optionally wait for the thread to exit
 	}
 
 	private void close_files() {	//close files
