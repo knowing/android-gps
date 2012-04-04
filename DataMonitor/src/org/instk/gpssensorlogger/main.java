@@ -77,16 +77,13 @@ public class main extends Activity implements OnClickListener {
 		Button lbtn_start=(Button) findViewById(R.id.DLbtn0);
 		Button lbtn_stop=(Button) findViewById(R.id.DLbtn2);
 		Button lbtn_erec=(Button) findViewById(R.id.DLbtn3);
-		Button lbtn_show=(Button) findViewById(R.id.DLbtn4);
 
 		TextView ltv1 = (TextView) findViewById(R.id.Atv1);
-		//		ltv1.setText("This application was developed from the source codes available at github.com/yigiter/");
-		ltv1.setText("Acquired sensor data (25Hz): acceleration and orientation sensor\nAcquired location data: GPS and network provider"); //change comment here
+		ltv1.setText("Acquired sensor data (25Hz): acceleration and orientation sensor\nAcquired location data: GPS"); //change comment here
 
 		lbtn_start.setOnClickListener(this);
 		lbtn_stop.setOnClickListener(this);
 		lbtn_erec.setOnClickListener(this);
-		lbtn_show.setOnClickListener(this);
 
 		//retrieve preferences
 		SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
@@ -185,10 +182,10 @@ public class main extends Activity implements OnClickListener {
 			dump_console();
 		}
 		
-		else if (arg0.getId()==R.id.DLbtn4) {
-			//Show registered
-			show_registered();
-		}
+//		else if (arg0.getId()==R.id.DLbtn4) {
+//			//Show registered
+//			show_registered();
+//		}
 	}
 
 	private void buildAlertMessageNoGps() {	//Alert Message in case GPS is disabled
@@ -209,35 +206,35 @@ public class main extends Activity implements OnClickListener {
 		alert.show();
 	}
 
-	private void show_registered() { //Show registered
-		CSensorStates lSenStates=mSenStates;
-		CLocProvStates lLPStates=mLPStates;
-
-		String nt="\nAVAILABLE SOURCES: \n";
-		nt=nt + "SENSORS: Total Number: " + mSenStates.getNum() + " Active:" + mSenStates.getNumAct() + "\n";
-		int n=0;
-		for (int i=0;i<lSenStates.getNum();i++) {
-			if (lSenStates.getActive(i))
-				nt=nt + lSenStates.getName(i) + " (active)\n";
-			else
-				nt=nt + lSenStates.getName(i) + " (inactive) \n";
-			n++;
-		}
-		nt=nt + "PROVIDERS: Total Number: " + mLPStates.getNum() + " Active:" + mLPStates.getNumAct() + "(Possibly not up to date)\n";
-		for (int i=0;i<lLPStates.getNum();i++) {
-			if (lLPStates.getActive(i))
-				nt=nt + lLPStates.getName(i) + " (active) \n";
-			else
-				nt=nt + lLPStates.getName(i) + " (inactive) \n";
-			n++;
-		}
-
-		if (n==0) {
-			nt="No Registered Source.";
-		}
-
-		mLV.addtext(nt + "\n");
-	}
+//	private void show_registered() { //Show registered
+//		CSensorStates lSenStates=mSenStates;
+//		CLocProvStates lLPStates=mLPStates;
+//
+//		String nt="\nAVAILABLE SOURCES: \n";
+//		nt=nt + "SENSORS: Total Number: " + mSenStates.getNum() + " Active:" + mSenStates.getNumAct() + "\n";
+//		int n=0;
+//		for (int i=0;i<lSenStates.getNum();i++) {
+//			if (lSenStates.getActive(i))
+//				nt=nt + lSenStates.getName(i) + " (active)\n";
+//			else
+//				nt=nt + lSenStates.getName(i) + " (inactive) \n";
+//			n++;
+//		}
+//		nt=nt + "PROVIDERS: Total Number: " + mLPStates.getNum() + " Active:" + mLPStates.getNumAct() + "(Possibly not up to date)\n";
+//		for (int i=0;i<lLPStates.getNum();i++) {
+//			if (lLPStates.getActive(i))
+//				nt=nt + lLPStates.getName(i) + " (active) \n";
+//			else
+//				nt=nt + lLPStates.getName(i) + " (inactive) \n";
+//			n++;
+//		}
+//
+//		if (n==0) {
+//			nt="No Registered Source.";
+//		}
+//
+//		mLV.addtext(nt + "\n");
+//	}
 
 
 	private File file_location(String ntag) {
