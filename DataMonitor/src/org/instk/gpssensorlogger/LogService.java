@@ -59,8 +59,8 @@ public class LogService extends Service implements SensorEventListener, Location
 			mLocManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 			//Get the names of all sensor sources
-			mSenStates = new CSensorStates(mSensorManager.getSensorList(Sensor.TYPE_ALL)); //nur noch Accelerometer
-
+			mSenStates = new CSensorStates(mSensorManager.getSensorList(Sensor.TYPE_ALL)); 
+			//nur noch Accelerometer
 			//			Sensor mAccelerometer;
 			//			mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);			
 			//			mSensorManager.registerListener(this, mAccelerometer, 40);
@@ -201,7 +201,7 @@ public class LogService extends Service implements SensorEventListener, Location
 	private void register_listeners() {
 		CSensorStates lSenStates=mSenStates;
 		BufferedWriter[] bfout=fout;
-		
+
 		mHandlerThread = new HandlerThread("SensorLogThread");
 		mHandlerThread.start();
 		Handler handler = new Handler(mHandlerThread.getLooper());
@@ -216,14 +216,14 @@ public class LogService extends Service implements SensorEventListener, Location
 
 		//Register listeners for active location providers
 		if (bfout[1]!=null) {	
-			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 60s, mindist 20m
+//			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 60s, mindist 20m
 			mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 2, this); //mintime 10s, mindist 2m
 		}
 	}
 
 	private void stop_recording() {
 		//Stop Recording
-//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+		//		mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
 		mSensorManager.unregisterListener(this);
 		mLocManager.removeUpdates(this);
 		close_files();

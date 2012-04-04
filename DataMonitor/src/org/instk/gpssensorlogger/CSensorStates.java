@@ -38,28 +38,8 @@ public class CSensorStates  implements Parcelable{
 					names[i]="accelerometer";
 //					act_list[i]=false;
 				break;
-				case (Sensor.TYPE_GYROSCOPE):
-					names[i]="gyroscope";
-					act_list[i]=false;
-				break;
-				case (Sensor.TYPE_PROXIMITY):
-					names[i]="proximity";
-					act_list[i]=false;
-				break;
 				case (Sensor.TYPE_MAGNETIC_FIELD):
 					names[i]="magnetic field";
-					act_list[i]=false;
-				break;
-				case (Sensor.TYPE_LIGHT):
-					names[i]="light";
-					act_list[i]=false;
-				break;
-				case (Sensor.TYPE_PRESSURE):
-					names[i]="pressure";
-					act_list[i]=false;
-				break;
-				case (Sensor.TYPE_TEMPERATURE):
-					names[i]="temperature";
 					act_list[i]=false;
 				break;
 				case (Sensor.TYPE_ORIENTATION):
