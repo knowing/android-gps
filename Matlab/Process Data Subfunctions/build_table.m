@@ -1,4 +1,4 @@
-function [new_table] = build_table(data, filename, tgap, no_col)
+function [pause_table] = build_table(pause_table, data, filename, tgap)
 %BUILD_TABLE returns table with elements before and after gaps of tgap
 %   minutes incl. filename, timestamps, coordinates, accuracy etc.
 
@@ -9,7 +9,7 @@ function [new_table] = build_table(data, filename, tgap, no_col)
 
 %% Initialisation
 tgap = tgap * 60* 1000;
-
+no_col = size(pause_table, 2); % following calculations are adapted to the number of columns defined in process_data.m
 new_table = cell(50,no_col);
 n=1; i=1;
 
@@ -61,8 +61,9 @@ new_table{n, 8} = data(i, 6); %longitude
 n = n+1;
 
 if n>50
-    fprintf('Error: Too few rows in new_table.');
+    error('Too few rows in new_table in function build_table.');
 end
 new_table(n:end, :) = [];
-% fprintf('Done (build_table)\n');
+
+pause_table = [pause_table;new_table];
 end

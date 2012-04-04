@@ -1,5 +1,16 @@
 %Codeabschnitte
 
+%% Korrigiere fehlerhafte Dateien (abschlieﬂendes ];)
+file_loc = strcat('D:\Documents\Studienarbeit_PC\App-Aufnahmen\Matze\accelerometer_20111212.m');
+try
+    run(file_loc);
+catch
+    fileID = fopen(file_loc,'a');
+    fprintf(fileID,'\n];');
+    fclose(fileID);
+    run(file_loc);
+end
+
 %% test for irregularities: time step back
 clc
 
@@ -11,13 +22,13 @@ end
 
 for i=2:size(test,1)
     if (test(i,1)-test(i-1,1)) < 0
-    fprintf('\n%.0f %.0f', test(i-1,1), test(i,1));
+        fprintf('\n%.0f %.0f', test(i-1,1), test(i,1));
     end
 end
 
 provider = divide_provider(provider);
 
-%% plot provider time 
+%% plot provider time
 plot (provider(:,1), 'r'); hold on; plot(provider(:,3), 'b--');
 
 %% plot test (=acc) time and mark time steps of more than 1 minute
@@ -80,7 +91,7 @@ title('fastest');
 
 %% Erg‰nzungen f¸r fehlende Aufnahmen
 fixes =[
-
+    
 1323286500000, 3, 1323280734514, 58.0, 48.16017056, 11.57777982, 0.0, 0.0; % eingef¸gt: Sport
 1323286550000, 3, 1323280734514, 56.0, 48.160317,11.575016, 0.0, 0.0; % eingef¸gt: dazwischen
 1323286560000, 3, 1323287806889, 5.0, 48.161241,11.568462, 0.0, 0.0; %eingef¸gt: UBahn Hohenzollernplatz
