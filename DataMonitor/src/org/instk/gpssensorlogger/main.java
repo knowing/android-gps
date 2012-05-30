@@ -63,7 +63,7 @@ public class main extends Activity implements OnClickListener {
 		mSenMan=lSenMan;
 		mLocMan=lLocMan;
 
-		if ( !lLocMan.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {	//alert message if GPS is diabled
+		if ( !lLocMan.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {	//alert message if GPS is disabled
 			buildAlertMessageNoGps();
 		}
 
@@ -79,7 +79,7 @@ public class main extends Activity implements OnClickListener {
 		Button lbtn_erec=(Button) findViewById(R.id.DLbtn3);
 
 		TextView ltv1 = (TextView) findViewById(R.id.Atv1);
-		ltv1.setText("Acquired sensor data (25Hz): acceleration and orientation sensor\nAcquired location data: GPS"); //change comment here
+		ltv1.setText("Acquired sensor data: acceleration and \norientation sensor (25Hz), GPS (1Hz)"); //change comment here
 
 		lbtn_start.setOnClickListener(this);
 		lbtn_stop.setOnClickListener(this);
@@ -243,7 +243,7 @@ public class main extends Activity implements OnClickListener {
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) { // We can read and write the media
 			String ftag=day.format(new Date()); // date is filename
-			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger/v1.0"); //speichert in sdcard/GPSSensorLogger
+			File root = new File(Environment.getExternalStorageDirectory(), "GPSSensorLogger"); //speichert in sdcard/GPSSensorLogger
 			if (!root.exists()) {
 				root.mkdirs();
 			}
@@ -289,7 +289,7 @@ public class main extends Activity implements OnClickListener {
 				BufferedWriter[] bfout=fout;
 
 				String daytime=dt.format(new Date());
-				String text = "\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (acc, lin acc, grav, orn at 25Hz,gps (10s,2m), network (60s,20m))\n";  //change comment here
+				String text = "\n\n% COMMENT ( " + daytime + " ): \n% " + comment + " (acceleration + orientation at 25Hz, gps at 1Hz or min. 2m)\n";  //change comment here
 
 				//Append text and close files
 				if (bfout[0]!=null)
@@ -314,7 +314,7 @@ public class main extends Activity implements OnClickListener {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				BufferedWriter[] bfout=fout;
 				String daytime=dt.format(new Date());
-				String text = "\n\n% NO COMMENT ( " + daytime + ", acc, lin acc, grav, orn at 25Hz,gps (10s,2m), network (60s,20m))";  //change comment here
+				String text = "\n\n% NO COMMENT ( " + daytime + ", acceleration + orientation at 25Hz, gps at 1Hz or min. 2m)";  //change comment here
 
 				//Append text and close files
 				if (bfout[0]!=null)
@@ -339,10 +339,18 @@ public class main extends Activity implements OnClickListener {
 
 
 	private void dump_console() {
+		// Device model
+		String PhoneModel = android.os.Build.MODEL;
+		// Android version
+		String AndroidVersion = android.os.Build.VERSION.RELEASE;
+		int AndroidSDK = android.os.Build.VERSION.SDK_INT;
+
 		try {
 			String daytime=dt.format(new Date());
 			BufferedWriter file = new BufferedWriter(new FileWriter(file_location("log_"), true));
-			file.append("LOGFILE ( " + daytime + ")\n\n\n" + mLV.getText().toString() + "\n\n");
+			file.append("LOGFILE ( " + daytime + ")\n\nDevice model: " + PhoneModel + "\n");
+			file.append("Android version: " + AndroidVersion + "\nAndroid SDK: " + AndroidSDK + "\n\n");
+			file.append(mLV.getText().toString() + "\n\n");
 			file.close();
 			mLV.addtext("Logfile saved \n");
 		}

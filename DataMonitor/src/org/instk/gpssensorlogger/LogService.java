@@ -143,7 +143,7 @@ public class LogService extends Service implements SensorEventListener, Location
 		if (file_location("accelerometer_").exists())
 			start_text = "";
 		else
-			start_text = "% ACCELEROMETER\n\n% Attributes:\n% system time, time stamp, sensor type, x_value, y_value, z_value \n\nacc = [";
+			start_text = "% ACCELEROMETER AND ORIENTATION SENSOR\n\n% Attributes:\n% system time, 0, sensor type (1 for accelerometer, 3 for orientation sensor), x_value, y_value, z_value \n\nacc = [";
 
 		bfout[0]=new BufferedWriter(new FileWriter(file_location("accelerometer_"), true));
 
@@ -159,7 +159,7 @@ public class LogService extends Service implements SensorEventListener, Location
 		if (file_location("locprovider_").exists())
 			start_text = "";
 		else
-			start_text = "% NETWORK PROVIDER\n\n% Attributes:\n% system time, provider name (3 for gps, 7 for network), 0, pr. accuracy, " +
+			start_text = "% GPS PROVIDER\n\n% Attributes:\n% system time, 3 (for provider type gps), 0, pr. accuracy, " +
 					"pr. latitude, pr. longitude, pr. bearing, pr. speed \n\n" + "provider = [";
 
 		bfout[1]=new BufferedWriter(new FileWriter(file_location("locprovider_"), true));
@@ -217,7 +217,7 @@ public class LogService extends Service implements SensorEventListener, Location
 		//Register listeners for active location providers
 		if (bfout[1]!=null) {	
 //			mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 20, this); //mintime 60s, mindist 20m
-			mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 2, this); //mintime 10s, mindist 2m
+			mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 2, this); //mintime 1s, mindist 2m
 		}
 	}
 
