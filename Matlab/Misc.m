@@ -1,16 +1,5 @@
 %Codeabschnitte
 
-%% Korrigiere fehlerhafte Dateien (abschlieﬂendes ];)
-file_loc = strcat('D:\Documents\Studienarbeit_PC\App-Aufnahmen\Matze\accelerometer_20111212.m');
-try
-    run(file_loc);
-catch
-    fileID = fopen(file_loc,'a');
-    fprintf(fileID,'\n];');
-    fclose(fileID);
-    run(file_loc);
-end
-
 %% test for irregularities: time step back
 clc
 

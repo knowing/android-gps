@@ -70,8 +70,8 @@ goal2_lat = poi_table{goal2+1,2};
 goal2_lng = poi_table{goal2+1,3};
 
 %% Output most used routes
-fprintf('Your favourite route starts at POI No. %i (%2.4f, %2.4f) and ends at POI No. %i (%2.4f, %2.4f).\n', start1, start1_lng, start1_lat, goal1, goal1_lng, goal1_lat);
-fprintf('Your second favourite route starts at POI No. %i (%2.4f, %2.4f) and ends at POI No. %i (%2.4f, %2.4f).\n\n', start2, start2_lng, start2_lat, goal2, goal2_lng, goal2_lat);
+% fprintf('Your favourite route starts at POI No. %i (%2.4f, %2.4f) and ends at POI No. %i (%2.4f, %2.4f).\n', start1, start1_lng, start1_lat, goal1, goal1_lng, goal1_lat);
+% fprintf('Your second favourite route starts at POI No. %i (%2.4f, %2.4f) and ends at POI No. %i (%2.4f, %2.4f).\n\n', start2, start2_lng, start2_lat, goal2, goal2_lng, goal2_lat);
 
 %% Transfer relevant information about these routes = 2 lines of route_table
 route1 = rest_table(1,:); route2 = rest_table(1,:);

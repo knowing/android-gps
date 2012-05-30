@@ -1,4 +1,4 @@
-function [pause_table] = build_table(pause_table, data, filename, tgap)
+function [pause_table] = build_table(pause_table, data, date, tgap)
 %BUILD_TABLE returns table with elements before and after gaps of tgap
 %   minutes incl. filename, timestamps, coordinates, accuracy etc.
 
@@ -12,11 +12,13 @@ tgap = tgap * 60* 1000;
 no_col = size(pause_table, 2); % following calculations are adapted to the number of columns defined in process_data.m
 new_table = cell(50,no_col);
 n=1; i=1;
-
+if size(data,1)<2
+    fprintf('%s contains less than 2 lines.', date);
+end
 %% initiate first line
-new_table{n, 1} = filename;   %filename
-new_table{n, 2} = i;        %index
-new_table{n, 3} = data(i,1);%UNIX time (system time(=1) not provider time(=3))
+new_table{n, 1} = date;   %date
+new_table{n, 2} = i;          %index of accurate gps data
+new_table{n, 3} = data(i,1); %UNIX time (system time(=1) not provider time(=3))
 new_table{n, 4} = epoch2date(data(i, 1), false); %UTC time (system time)
 new_table{n, 5} = 'start';
 new_table{n, 6} = data(i, 4); %accuracy
@@ -27,7 +29,7 @@ n = n+1;
 for i = 2:size(data,1)
     act_gap = data(i,1) - data(i-1,1);
     if act_gap > tgap
-        new_table{n, 1} = filename;   %filename
+        new_table{n, 1} = date;   %date
         new_table{n, 2} = i-1;        %index
         new_table{n, 3} = data(i-1,1);%UNIX time (system time(=1) not provider time(=3))
         new_table{n, 4} = epoch2date(data(i-1, 1), false); %UTC time (system time)
@@ -37,7 +39,7 @@ for i = 2:size(data,1)
         new_table{n, 8} = data(i-1, 6); %longitude
         n = n+1;
         
-        new_table{n, 1} = filename;   %filename
+        new_table{n, 1} = date;   %date
         new_table{n, 2} = i;        %index
         new_table{n, 3} = data(i,1);%UNIX time (system time(=1) not provider time(=3))
         new_table{n, 4} = epoch2date(data(i, 1), false); %UTC time (system time)
@@ -50,7 +52,7 @@ for i = 2:size(data,1)
 end
 
 i=size(data,1);
-new_table{n, 1} = filename;   %filename
+new_table{n, 1} = date;   %date
 new_table{n, 2} = i;        %index
 new_table{n, 3} = data(i,1);%UNIX time (system time(=1) not provider time(=3))
 new_table{n, 4} = epoch2date(data(i, 1), false); %UTC time (system time)

@@ -26,11 +26,11 @@ else
     home_ind = max_rest_ind(2); % home is where most 3a.m.s are spent
 end
 
-fprintf('These are your home coordinates (POI No. %i): \t %2.4f, %2.4f\n', home_ind, poi_table{home_ind+1,2}, poi_table{home_ind+1,3});
-fprintf('\t http://maps.google.de/maps?q=%2.4f,+%2.4f\n', poi_table{home_ind+1,2}, poi_table{home_ind+1,3});
-
-fprintf('You spent most time besides your home at POI No. %i: \t %2.4f, %2.4f\n', work_ind, poi_table{work_ind+1,2}, poi_table{work_ind+1,3});
-fprintf('\t http://maps.google.de/maps?q=%2.4f,+%2.4f\n\n', poi_table{work_ind+1,2}, poi_table{work_ind+1,3});
+% fprintf('These are your home coordinates (POI No. %i): \t %2.4f, %2.4f\n', home_ind, poi_table{home_ind+1,2}, poi_table{home_ind+1,3});
+% fprintf('\t http://maps.google.de/maps?q=%2.4f,+%2.4f\n', poi_table{home_ind+1,2}, poi_table{home_ind+1,3});
+% 
+% fprintf('You spent most time besides your home at POI No. %i: \t %2.4f, %2.4f\n', work_ind, poi_table{work_ind+1,2}, poi_table{work_ind+1,3});
+% fprintf('\t http://maps.google.de/maps?q=%2.4f,+%2.4f\n\n', poi_table{work_ind+1,2}, poi_table{work_ind+1,3});
 
 end
 
