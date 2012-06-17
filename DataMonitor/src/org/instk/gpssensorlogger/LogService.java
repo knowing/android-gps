@@ -35,7 +35,7 @@ import android.widget.Toast;
 public class LogService extends Service implements SensorEventListener, LocationListener{
 	private Looper mServiceLooper;
 	private ServiceHandler mServiceHandler;
-	private HandlerThread mHandlerThread;;
+	private HandlerThread mHandlerThread;
 
 	CSensorStates mSenStates;
 
